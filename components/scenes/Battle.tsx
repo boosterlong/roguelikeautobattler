@@ -1,19 +1,40 @@
 import React, {useEffect, useState} from "react";
-import {Text, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
+import {getRandomInt} from "../../lib/random";
 
 export default function Battle () {
 	const [logs, setLogs] = useState<string[]>([])
 
 	useEffect(() => {
-		const newLogs = []
-		for (let i = 0; i <= 1000; i++) {
+		const newLogs : string[] = []
+		for (let i = 1; i <= 1000; i++) {
 			setTimeout(() => {
-				newLogs.push(`Person ${i%2===0} did ${Math.random()}!`)
+				const dmg = getRandomInt(1, 6)
+				const attacker = i%2===0 ? 'Player' : "Monster"
+				const defender = attacker === 'Player' ? 'Monster' : 'Player'
+				newLogs.push(`${attacker} did ${dmg} damage to ${defender}`)
+				setLogs([...newLogs])
 			}, i * 2000)
 		}
 	}, [])
 
-	return <View>
+	return <View style={styles.container}>
 		<Text>This is a Battle!</Text>
+		<View>
+			<Text>Here are our logs</Text>
+			{logs.map((msg, key) => {
+				return <View key={key}>{msg}</View>
+			})}
+		</View>
 	</View>
 }
+
+
+const styles = StyleSheet.create({
+	container: {
+		width: '500px',
+		padding: '10px',
+		border: '1px solid #333333',
+		background: '#F0F0F0'
+	},
+});
