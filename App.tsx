@@ -6,7 +6,7 @@ import Battle from "./components/scenes/Battle";
 
 
 export default function App() {
-  const [scene, setScene] = useState<string>('start')
+  const [scene, setScene] = useState<string>('battle')
 
   let CScene
   if (scene === 'start') {
@@ -14,6 +14,7 @@ export default function App() {
   } else if (scene === 'battle') {
     CScene = <Battle />
   }
+
 
   return (
     <View style={styles.container}>
