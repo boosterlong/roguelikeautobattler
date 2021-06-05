@@ -7,7 +7,7 @@ export default function Battle () {
 
 	useEffect(() => {
 		const newLogs : string[] = []
-		for (let i = 1; i <= 1000; i++) {
+		for (let i = 1; i <= 10; i++) {
 			setTimeout(() => {
 				const dmg = getRandomInt(1, 6)
 				const attacker = i%2===0 ? 'Player' : "Monster"
@@ -32,7 +32,8 @@ export default function Battle () {
 
 const styles = StyleSheet.create({
 	container: {
-		width: '500px',
+		maxWidth: '500px',
+		width: '100%',
 		padding: '10px',
 		border: '1px solid #333333',
 		background: '#F0F0F0'
