@@ -1,41 +1,67 @@
 import React, {useEffect, useState} from "react";
 import {Pressable, StyleSheet, Text, View} from "react-native";
-import Combatant, {CombatantData} from "../../lib/combatant.class";
-import {getRandomInt} from "../../lib/random";
+import Combatant, {CombatantData , teamIsDead} from "../../lib/combatant.class";
+import {getRandomInt, getRandomItem} from "../../lib/random";
 import HpBar from "../HpBar"
 
+
+const enemyNames = ["Imp", "Orc", "Troll", "Gnome", "Vampire", "Crossfitter"]
 const startingHp = 10
-const startingMonster = {name: 'Dame Judy Dench', currentHp: 10, maxHp: 10, minDmg: 1, maxDmg: 10}
-const startingPlayer = {name: 'Judge Judy', currentHp: 20, maxHp: 20, minDmg: 1, maxDmg: 4}
+const startingPlayer : CombatantData = {name: 'Judge Judy', currentHp: 30, maxHp: 30, minDmg: 3, maxDmg: 10, team: 'player'}
 
 export default function Battle () {
+	const [gameNumber, setGameNumber] = useState<number>(1)
 	const [logs, setLogs] = useState<string[]>([])
-	const [playerData, setPlayerData] = useState<CombatantData>(startingPlayer)
-	const [monsterData, setMonsterData] = useState<CombatantData>(startingMonster)
+	const [combatantDatas, setCombatants] = useState<CombatantData[]>([])
 	const [activeCombatant, setActiveCombatant] = useState<number>(0)
 
-	const player = new Combatant(playerData)
-	const monster = new Combatant(monsterData)
-	const youLose = player.isDead()
-	const youWin = monster.isDead()
+	
+	const combatants = combatantDatas.map((data) => {
+		return new Combatant(data)
+	} )
 
+	const youLose = teamIsDead(combatants, 'player')
+	const youWin = teamIsDead(combatants, 'monsters')
+
+	useEffect(() => {
+		const combatants : CombatantData[] = []
+		combatants.push(startingPlayer)
+		for (let i = 1; i <= 5; i++) {
+			combatants.push({
+				name: getRandomItem(enemyNames),
+				currentHp: 5,
+				maxHp: 5,
+				minDmg:1,
+				maxDmg: 2,
+				team: 'monsters',
+			})
+		}
+		setCombatants(combatants)
+		setLogs([])
+	}, [gameNumber])
 
 	function resetHp() {
-		setMonsterData(startingMonster)
-		setPlayerData(startingPlayer)
-		setLogs([])
+		setGameNumber(gameNumber+1)
 	}
 
 	function newTurn() {
-		const attacker = activeCombatant == 1 ? player : monster;
-		const defender= activeCombatant == 1 ? monster : player;
+		const attacker = combatants[activeCombatant]
+		const defender = attacker.getTarget(combatants)
 		const dmg = attacker.rollDamage()
 		logs.push(`${attacker.name} did ${dmg} damage to ${defender.name}`)
 		defender.takeDamage(dmg)
-		setPlayerData(player.getData())
-		setMonsterData(monster.getData())
+		setCombatants(combatants.map((c) => {
+			return c.getData()
+		}))
 		setLogs([...logs])
-		setActiveCombatant(1 - activeCombatant)
+		let nextCombatant = activeCombatant
+		do {
+			nextCombatant = (nextCombatant + 1)
+			if (nextCombatant == combatants.length) {
+				nextCombatant = 0
+			}} 
+		while (combatants[nextCombatant].isDead())
+		setActiveCombatant(nextCombatant)
 	}
 	const restart = <Pressable onPress={() => resetHp()}>Start Again!</Pressable>
 	if (youLose) {
@@ -48,12 +74,14 @@ export default function Battle () {
 	}
 
 	return <View style={styles.container}>
-		<Text>{player.name} HP</Text>
-		<HpBar current={player.currentHp} max={player.maxHp}></HpBar>
-		<Text>{monster.name} HP
-		</Text>
-		<HpBar current={monster.currentHp} max={monster.maxHp}></HpBar>
-		<View>			
+		<Text>Game # {gameNumber}</Text>
+
+		{combatants.map(cbt => {
+			return <View>
+				<Text>{cbt.name} HP</Text>
+				<HpBar current={cbt.currentHp} max={cbt.maxHp}></HpBar>
+			</View>
+		})}
 			
 			<Pressable style={styles.button} onPress={() => newTurn()}>Advance Combat</Pressable>
 			<Text>Battle Log:</Text>
@@ -61,7 +89,6 @@ export default function Battle () {
 				return <View key={key}>{msg}</View>
 			})}	
 		</View>
-	</View>
 }
 
 

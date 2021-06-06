@@ -18,7 +18,6 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text>Welcome to our game</Text>
       {CScene}
       <StatusBar style="auto" />
     </View>

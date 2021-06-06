@@ -1,4 +1,6 @@
-import { getRandomInt } from './random';
+import { getRandomInt, getRandomItem } from './random';
+
+type Team = 'monsters' | 'player'
 
 export type CombatantData = {
     name:string
@@ -6,6 +8,7 @@ export type CombatantData = {
     maxHp:number
     minDmg:number
     maxDmg:number
+    team:Team
 }
 
 class Combatant {
@@ -13,15 +16,17 @@ class Combatant {
     currentHp:number
     maxHp:number
     minDmg:number
-    maxDmg:number    
+    maxDmg:number
+    team:Team
 
     constructor (data : CombatantData) {
-        const {name, maxHp, currentHp, minDmg, maxDmg} = data
+        const {name, maxHp, currentHp, minDmg, maxDmg, team} = data
         this.name = name
         this.currentHp = currentHp
         this.maxHp = maxHp
         this.minDmg = minDmg
         this.maxDmg = maxDmg
+        this.team = team
     }
 
     takeDamage(damage:number) {
@@ -32,23 +37,39 @@ class Combatant {
         }
     }
 
+
     isDead():boolean {
         return this.currentHp === 0
     }
 
-    getData() {
+    getTarget(combatants:Combatant[]) : Combatant {
+        const otherGuys = combatants.filter((c) => {
+            return c.team != this.team && c.isDead() == false
+        })
+        return getRandomItem(otherGuys)
+    }
+
+    getData() : CombatantData {
         return {
             name:this.name,
             currentHp:this.currentHp,
             maxHp:this.maxHp,
             minDmg:this.minDmg,
-            maxDmg:this.maxDmg
+            maxDmg:this.maxDmg,
+            team:this.team,
         }
     }
 
     rollDamage() {
         return getRandomInt(this.minDmg, this.maxDmg)
     }
+}
+
+export function teamIsDead(combatants:Combatant[],team:Team ):boolean {
+    const alivePeople = combatants.filter((combatant) => {
+        return !combatant.isDead() && combatant.team == team
+    })
+    return alivePeople.length == 0
 }
 
 
