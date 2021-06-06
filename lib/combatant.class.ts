@@ -1,6 +1,8 @@
 import { getRandomInt, getRandomItem } from './random';
 
 type Team = 'monsters' | 'player'
+type Sprite = 'goblinSprite' | 'slimeSprite' | 'heroSprite'
+
 
 export type CombatantData = {
     name:string
@@ -9,6 +11,7 @@ export type CombatantData = {
     minDmg:number
     maxDmg:number
     team:Team
+    sprite:Sprite
 }
 
 class Combatant {
@@ -18,15 +21,17 @@ class Combatant {
     minDmg:number
     maxDmg:number
     team:Team
+    sprite:Sprite
 
     constructor (data : CombatantData) {
-        const {name, maxHp, currentHp, minDmg, maxDmg, team} = data
+        const {name, maxHp, currentHp, minDmg, maxDmg, team, sprite} = data
         this.name = name
         this.currentHp = currentHp
         this.maxHp = maxHp
         this.minDmg = minDmg
         this.maxDmg = maxDmg
         this.team = team
+        this.sprite = sprite
     }
 
     takeDamage(damage:number) {
@@ -57,6 +62,7 @@ class Combatant {
             minDmg:this.minDmg,
             maxDmg:this.maxDmg,
             team:this.team,
+            sprite:this.sprite
         }
     }
 

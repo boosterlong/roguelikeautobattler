@@ -1,13 +1,16 @@
 import React, {useEffect, useState} from "react";
-import {Pressable, StyleSheet, Text, View} from "react-native";
+import {Pressable, StyleSheet, Text, View, Image} from "react-native";
 import Combatant, {CombatantData , teamIsDead} from "../../lib/combatant.class";
 import {getRandomInt, getRandomItem} from "../../lib/random";
 import HpBar from "../HpBar"
+import heroSprite from '../../assets/herochar_idle_anim.gif'
+import goblinSprite from '../../assets/goblin.gif'
+import slimeSprite from '../../assets/slime.gif'
 
-
-const enemyNames = ["Imp", "Orc", "Troll", "Gnome", "Vampire", "Crossfitter"]
+const enemyNames = ["Goblin","Slime"]
 const startingHp = 10
-const startingPlayer : CombatantData = {name: 'Judge Judy', currentHp: 30, maxHp: 30, minDmg: 3, maxDmg: 10, team: 'player'}
+const startingPlayer : CombatantData = {name: 'Hero', currentHp: 30, maxHp: 30, minDmg: 3, maxDmg: 10, team: 'player', sprite: heroSprite}
+
 
 export default function Battle () {
 	const [gameNumber, setGameNumber] = useState<number>(1)
@@ -27,13 +30,22 @@ export default function Battle () {
 		const combatants : CombatantData[] = []
 		combatants.push(startingPlayer)
 		for (let i = 1; i <= 5; i++) {
+			const name = getRandomItem(enemyNames)
+			let sprite
+			if (name == 'Goblin') {
+				sprite = goblinSprite
+			}
+			else if (name == 'Slime') {
+				sprite = slimeSprite
+			}
 			combatants.push({
-				name: getRandomItem(enemyNames),
+				name: name,
 				currentHp: 5,
 				maxHp: 5,
-				minDmg:1,
+				minDmg:0,
 				maxDmg: 2,
 				team: 'monsters',
+				sprite: sprite,
 			})
 		}
 		setCombatants(combatants)
@@ -48,7 +60,9 @@ export default function Battle () {
 		const attacker = combatants[activeCombatant]
 		const defender = attacker.getTarget(combatants)
 		const dmg = attacker.rollDamage()
-		logs.push(`${attacker.name} did ${dmg} damage to ${defender.name}`)
+		if (dmg == 0) {
+			logs.push(`${attacker.name} missed!`)}
+		else {logs.push(`${attacker.name} did ${dmg} damage to ${defender.name}!`)}
 		defender.takeDamage(dmg)
 		setCombatants(combatants.map((c) => {
 			return c.getData()
@@ -63,7 +77,7 @@ export default function Battle () {
 		while (combatants[nextCombatant].isDead())
 		setActiveCombatant(nextCombatant)
 	}
-	const restart = <Pressable onPress={() => resetHp()}>Start Again!</Pressable>
+	const restart = <Pressable onPress={() => resetHp()}><button>Start Again!</button></Pressable>
 	if (youLose) {
 		return <><Text>You lose!</Text>
 		{restart}</>
@@ -79,11 +93,12 @@ export default function Battle () {
 		{combatants.map(cbt => {
 			return <View>
 				<Text>{cbt.name} HP</Text>
+				<View style={styles.sprite}><img src={cbt.sprite}></img></View>
 				<HpBar current={cbt.currentHp} max={cbt.maxHp}></HpBar>
 			</View>
 		})}
 			
-			<Pressable style={styles.button} onPress={() => newTurn()}>Advance Combat</Pressable>
+			<Pressable style={styles.button} onPress={() => newTurn()}><button>Advance Combat</button></Pressable>
 			<Text>Battle Log:</Text>
 			{logs.map((msg, key) => {
 				return <View key={key}>{msg}</View>
@@ -105,5 +120,8 @@ const styles = StyleSheet.create({
 		padding: '5px',
 		margin: 'auto',
 		borderRadius: '40px'
+	},
+	sprite: {
+		width: '30px'
 	}
 });

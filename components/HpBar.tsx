@@ -19,7 +19,7 @@ export default function HpBar(props:HpBarProps) {
 
 const styles = StyleSheet.create({
 	outer: {
-        height: '30px',
+        height: '25px',
         backgroundColor: '#FFE0E0',
         border: '2px solid #FFE0E0',
         position: 'relative',
@@ -32,8 +32,8 @@ const styles = StyleSheet.create({
     },
     label: {
         position: 'absolute',
-        height: '30px',
-        lineHeight: '30px',
+        height: '10px',
+        lineHeight: '20px',
         zIndex: 10,
     }
 });
