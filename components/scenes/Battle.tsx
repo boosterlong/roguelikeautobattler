@@ -9,7 +9,7 @@ import slimeSprite from '../../assets/slime.gif'
 
 const enemyNames = ["Goblin","Slime"]
 const startingHp = 10
-const startingPlayer : CombatantData = {name: 'Hero', currentHp: 30, maxHp: 30, minDmg: 3, maxDmg: 10, team: 'player', sprite: heroSprite}
+const startingPlayer : CombatantData = {name: 'Hero', currentHp: 30, maxHp: 30, minDmg: 5, maxDmg: 5, team: 'player', sprite: heroSprite}
 
 
 export default function Battle () {
@@ -29,7 +29,7 @@ export default function Battle () {
 	useEffect(() => {
 		const combatants : CombatantData[] = []
 		combatants.push(startingPlayer)
-		for (let i = 1; i <= 5; i++) {
+		for (let i = 1; i <= gameNumber; i++) {
 			const name = getRandomItem(enemyNames)
 			let sprite
 			if (name == 'Goblin') {
@@ -56,6 +56,11 @@ export default function Battle () {
 		setGameNumber(gameNumber+1)
 	}
 
+	function newGame() {
+		resetHp()
+		setGameNumber(1)
+	}
+
 	function newTurn() {
 		const attacker = combatants[activeCombatant]
 		const defender = attacker.getTarget(combatants)
@@ -77,10 +82,13 @@ export default function Battle () {
 		while (combatants[nextCombatant].isDead())
 		setActiveCombatant(nextCombatant)
 	}
-	const restart = <Pressable onPress={() => resetHp()}><button>Start Again!</button></Pressable>
+
+	const gameOver = <Pressable onPress={() => newGame()}><button>Start Again!</button></Pressable>
+
+	const restart = <Pressable onPress={() => resetHp()}><button>Next Round!</button></Pressable>
 	if (youLose) {
 		return <><Text>You lose!</Text>
-		{restart}</>
+		{gameOver}</>
 	}
 	if (youWin) {
 		return <><Text>You win! Good for you!</Text>
