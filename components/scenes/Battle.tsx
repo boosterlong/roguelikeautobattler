@@ -9,7 +9,7 @@ import slimeSprite from '../../assets/slime.gif'
 
 const enemyNames = ["Goblin","Slime"]
 const startingHp = 10
-const startingPlayer : CombatantData = {name: 'Hero', currentHp: 30, maxHp: 30, minDmg: 5, maxDmg: 5, team: 'player', sprite: heroSprite}
+const startingPlayer : CombatantData = {name: 'Hero', currentHp: 15, maxHp: 15, minDmg: 2, maxDmg: 5, team: 'player', sprite: heroSprite}
 
 
 export default function Battle () {
@@ -99,14 +99,22 @@ export default function Battle () {
 		<Text>Game # {gameNumber}</Text>
 
 		{combatants.map(cbt => {
-			return <View>
-				<Text>{cbt.name} HP</Text>
+			if (cbt.name == 'Hero') {
+			return <View style={styles.leftColumn}>
+				<Text>{cbt.name}</Text>
 				<View style={styles.sprite}><img src={cbt.sprite}></img></View>
 				<HpBar current={cbt.currentHp} max={cbt.maxHp}></HpBar>
+			</View>} 
+			else {
+				return <View style={styles.rightColumn}>
+				<View style={styles.sprite}><img src={cbt.sprite}></img></View>
+				<HpBar current={cbt.currentHp} max={cbt.maxHp}></HpBar>
+				<Text>{cbt.name}</Text>
 			</View>
+			}
 		})}
 			
-			<Pressable style={styles.button} onPress={() => newTurn()}><button>Advance Combat</button></Pressable>
+			<Pressable onPress={() => newTurn()}><button>Advance Combat</button></Pressable>
 			<Text>Battle Log:</Text>
 			{logs.map((msg, key) => {
 				return <View key={key}>{msg}</View>
@@ -121,8 +129,8 @@ const styles = StyleSheet.create({
 		width: '100%',
 		padding: '10px',
 		border: '1px solid #333333',
-		background: '#F0F0F0'
-	},
+		background: '#F0F0F0',
+			},
 	button: {
 		backgroundColor: '#00CC00',
 		padding: '5px',
@@ -130,6 +138,17 @@ const styles = StyleSheet.create({
 		borderRadius: '40px'
 	},
 	sprite: {
-		width: '30px'
-	}
+		width: '60px',
+	},
+	leftColumn: {
+		flex: '1',
+		alignSelf: 'flex-start',
+		width: '200px',
+	},
+	rightColumn: {
+		alignSelf: 'flex-end',
+		flex: '1',
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+	},
 });

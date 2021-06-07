@@ -20,6 +20,7 @@ export default function HpBar(props:HpBarProps) {
 const styles = StyleSheet.create({
 	outer: {
         height: '25px',
+        width: '100%',
         backgroundColor: '#FFE0E0',
         border: '2px solid #FFE0E0',
         position: 'relative',
