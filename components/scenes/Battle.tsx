@@ -87,42 +87,46 @@ export default function Battle () {
 
 	const restart = <Pressable onPress={() => resetHp()}><button>Next Round!</button></Pressable>
 	if (youLose) {
-		return <><Text>You lose!</Text>
+		return <><Text>You lose after winning {gameNumber - 1} rounds!</Text>
 		{gameOver}</>
 	}
 	if (youWin) {
 		return <><Text>You win! Good for you!</Text>
 		{restart}</>
 	}
+	if (gameNumber == 6) {
+		return <><Text>You have defeated all the Goblins and Slimes and saved the world!</Text>
+		{gameOver}</>
+	}
+	else {
+		return <View style={styles.container}>
+			<Text>Game # {gameNumber}</Text>
 
-	return <View style={styles.container}>
-		<Text>Game # {gameNumber}</Text>
-
-		{combatants.map(cbt => {
-			let style
-			let textPos = 'top'
-			const text = <Text>{cbt.name}</Text>
-			if (cbt.name == 'Hero') {
-				style = styles.leftColumn
-			} else {
-				textPos = 'bottom'
-				style = styles.rightColumn
-			}
-			return <View style={style}>
-				{textPos == 'top' && text}
-				<View style={styles.sprite}><img src={cbt.sprite}></img></View>
-				<HpBar current={cbt.currentHp} max={cbt.maxHp}></HpBar>
-				{textPos == 'bottom' && text}
-			</View>
-		})}
-
-			<Pressable onPress={() => newTurn()}><button>Advance Combat</button></Pressable>
-			<Text>Battle Log:</Text>
-			{logs.map((msg, key) => {
-				return <View key={key}>{msg}</View>
+			{combatants.map(cbt => {
+				let style
+				let textPos = 'top'
+				const text = <Text>{cbt.name}</Text>
+				if (cbt.name == 'Hero') {
+					style = styles.leftColumn
+				} else {
+					textPos = 'bottom'
+					style = styles.rightColumn
+				}
+				return <View style={style}>
+					{textPos == 'top' && text}
+					<View style={styles.sprite}><img src={cbt.sprite}></img></View>
+					<HpBar current={cbt.currentHp} max={cbt.maxHp}></HpBar>
+					{textPos == 'bottom' && text}
+				</View>
 			})}
-		</View>
-}
+
+				<Pressable onPress={() => newTurn()}><button>Advance Combat</button></Pressable>
+				<Text>Battle Log:</Text>
+				{logs.map((msg, key) => {
+					return <View key={key}>{msg}</View>
+				})}
+			</View>
+}}
 
 
 const styles = StyleSheet.create({
