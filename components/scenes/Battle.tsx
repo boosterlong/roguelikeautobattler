@@ -18,7 +18,7 @@ export default function Battle () {
 	const [combatantDatas, setCombatants] = useState<CombatantData[]>([])
 	const [activeCombatant, setActiveCombatant] = useState<number>(0)
 
-	
+
 	const combatants = combatantDatas.map((data) => {
 		return new Combatant(data)
 	} )
@@ -78,7 +78,7 @@ export default function Battle () {
 			nextCombatant = (nextCombatant + 1)
 			if (nextCombatant == combatants.length) {
 				nextCombatant = 0
-			}} 
+			}}
 		while (combatants[nextCombatant].isDead())
 		setActiveCombatant(nextCombatant)
 	}
@@ -99,26 +99,28 @@ export default function Battle () {
 		<Text>Game # {gameNumber}</Text>
 
 		{combatants.map(cbt => {
+			let style
+			let textPos = 'top'
+			const text = <Text>{cbt.name}</Text>
 			if (cbt.name == 'Hero') {
-			return <View style={styles.leftColumn}>
-				<Text>{cbt.name}</Text>
-				<View style={styles.sprite}><img src={cbt.sprite}></img></View>
-				<HpBar current={cbt.currentHp} max={cbt.maxHp}></HpBar>
-			</View>} 
-			else {
-				return <View style={styles.rightColumn}>
-				<View style={styles.sprite}><img src={cbt.sprite}></img></View>
-				<HpBar current={cbt.currentHp} max={cbt.maxHp}></HpBar>
-				<Text>{cbt.name}</Text>
-			</View>
+				style = styles.leftColumn
+			} else {
+				textPos = 'bottom'
+				style = styles.rightColumn
 			}
+			return <View style={style}>
+				{textPos == 'top' && text}
+				<View style={styles.sprite}><img src={cbt.sprite}></img></View>
+				<HpBar current={cbt.currentHp} max={cbt.maxHp}></HpBar>
+				{textPos == 'bottom' && text}
+			</View>
 		})}
-			
+
 			<Pressable onPress={() => newTurn()}><button>Advance Combat</button></Pressable>
 			<Text>Battle Log:</Text>
 			{logs.map((msg, key) => {
 				return <View key={key}>{msg}</View>
-			})}	
+			})}
 		</View>
 }
 
