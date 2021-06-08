@@ -20,6 +20,14 @@ export default function Battle () {
 	const [combatantDatas, setCombatants] = useState<CombatantData[]>([])
 	const [activeCombatant, setActiveCombatant] = useState<number>(0)
 
+	let teamTurn:string
+
+	if (activeCombatant == 0) {
+		teamTurn = 'Hero'
+	}
+	else {
+		teamTurn = 'Enemy'
+	}
 
 	const combatants = combatantDatas.map((data) => {
 		return new Combatant(data)
@@ -69,12 +77,13 @@ export default function Battle () {
 		setGameNumber(1)
 	}
 
-	function newTurn() {
+	function newTurn(choice:number) {
 		const attacker = combatants[activeCombatant]
 		const defender = attacker.getTarget(combatants)
 		const dmg = attacker.rollDamage()
+		if (choice == 1) {
 		if (dmg == 0) {
-			logs.push(`${attacker.name} missed!`)}
+			logs.push(`${defender.name} blocked the attack!`)}
 		else {logs.push(`${attacker.name} did ${dmg} damage to ${defender.name}!`)}
 		defender.takeDamage(dmg)
 		setCombatants(combatants.map((c) => {
@@ -89,7 +98,26 @@ export default function Battle () {
 			}}
 		while (combatants[nextCombatant].isDead())
 		setActiveCombatant(nextCombatant)
+	} else if (choice == 2) {
+		if (attacker.name == 'Hero') {
+		{logs.push(`${startingPlayer.name} healed ${dmg} health!`)}
+		attacker.takeDamage(dmg - (Math.floor(dmg * 2.5)))
+		setCombatants(combatants.map((c) => {
+			return c.getData()
+		}))
+		setLogs([...logs])
+		let nextCombatant = activeCombatant
+		do {
+			nextCombatant = (nextCombatant + 1)
+			if (nextCombatant == combatants.length) {
+				nextCombatant = 0
+			}}
+		while (combatants[nextCombatant].isDead())
+		setActiveCombatant(nextCombatant)
+	}	else {
+		alert(`It is not ${startingPlayer.name}'s turn.`)
 	}
+}}
 
 	const gameOver = <Pressable onPress={() => newGame()}><button>Start Again!</button></Pressable>
 
@@ -129,11 +157,13 @@ export default function Battle () {
 				</View>
 			})}
 				</ImageBackground>
-				<Pressable onPress={() => newTurn()}><button>Advance Combat</button></Pressable>
+				<><Pressable onPress={() => newTurn(1)}><button>Attack / Advance Combat</button></Pressable>
+				<Pressable onPress={() => newTurn(2)}><button>Heal (Only on Hero's turn.)</button></Pressable></>
+				<Text style={styles.teamTurn}>{teamTurn}'s turn.</Text>
 				<Text>Battle Log:</Text>
 				{logs.reverse().map((msg, key) => {
 					return <View key={key}>{msg}</View>
-				})}
+	})}
 			</View>
 }}
 
@@ -168,5 +198,9 @@ const styles = StyleSheet.create({
 	},
 	backdrop: {
 		resizeMode: 'contain',
+	},
+	teamTurn: {
+		fontSize: 30,
+		alignSelf: 'center'
 	}
 });

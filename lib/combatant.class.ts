@@ -40,6 +40,9 @@ class Combatant {
         if (this.currentHp < 0) {
             this.currentHp = 0
         }
+        if (this.currentHp > this.maxHp) {
+            this.currentHp = this.maxHp
+        }
     }
 
 
