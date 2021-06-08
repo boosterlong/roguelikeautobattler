@@ -4,7 +4,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import StartGame from "./components/scenes/Start";
 import Battle from "./components/scenes/Battle";
 
-
 export default function App() {
   const [scene, setScene] = useState<string>('battle')
 
@@ -18,6 +17,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.title}>The Forest of Judithia, the Eternal Judge</View>
       {CScene}
       <StatusBar style="auto" />
     </View>
@@ -31,4 +31,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
+  title: {
+    fontSize: 20,
+    fontWeight: "800",
+    fontFamily: 'Arial',
+    paddingBottom: 8,
+  }
 });

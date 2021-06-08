@@ -1,15 +1,17 @@
 import React, {useEffect, useState} from "react";
-import {Pressable, StyleSheet, Text, View, Image} from "react-native";
+import {Pressable, StyleSheet, Text, View, Image, ImageBackground} from "react-native";
 import Combatant, {CombatantData , teamIsDead} from "../../lib/combatant.class";
 import {getRandomInt, getRandomItem} from "../../lib/random";
 import HpBar from "../HpBar"
 import heroSprite from '../../assets/herochar_idle_anim.gif'
 import goblinSprite from '../../assets/goblin.gif'
 import slimeSprite from '../../assets/slime.gif'
+import background from "../../assets/background.png"
+
 
 const enemyNames = ["Goblin","Slime"]
 const startingHp = 10
-const startingPlayer : CombatantData = {name: 'Hero', currentHp: 15, maxHp: 15, minDmg: 2, maxDmg: 5, team: 'player', sprite: heroSprite}
+const startingPlayer : CombatantData = {name: 'Hero', currentHp: 25, maxHp: 25, minDmg: 2, maxDmg: 5, team: 'player', sprite: heroSprite}
 
 
 export default function Battle () {
@@ -29,24 +31,30 @@ export default function Battle () {
 	useEffect(() => {
 		const combatants : CombatantData[] = []
 		combatants.push(startingPlayer)
-		for (let i = 1; i <= gameNumber; i++) {
+		for (let i = 1; i <= getRandomInt(2,3); i++) {
 			const name = getRandomItem(enemyNames)
-			let sprite
 			if (name == 'Goblin') {
-				sprite = goblinSprite
+				combatants.push({
+					name: name,
+					currentHp: Math.floor(2.5 * gameNumber),
+					maxHp: Math.floor(2.5 * gameNumber),
+					minDmg:0,
+					maxDmg: Math.floor((1.5 * gameNumber) + 1),
+					team: 'monsters',
+					sprite: goblinSprite,
+				})
 			}
 			else if (name == 'Slime') {
-				sprite = slimeSprite
+				combatants.push({
+					name: name,
+					currentHp: Math.floor(4.5 * gameNumber),
+					maxHp: Math.floor(4.5 * gameNumber),
+					minDmg:0,
+					maxDmg: Math.floor((0.5 * gameNumber) + 1),
+					team: 'monsters',
+					sprite: slimeSprite,
+				})
 			}
-			combatants.push({
-				name: name,
-				currentHp: 5,
-				maxHp: 5,
-				minDmg:0,
-				maxDmg: 2,
-				team: 'monsters',
-				sprite: sprite,
-			})
 		}
 		setCombatants(combatants)
 		setLogs([])
@@ -100,6 +108,7 @@ export default function Battle () {
 	}
 	else {
 		return <View style={styles.container}>
+			<ImageBackground source={background} style={styles.backdrop}>
 			<Text>Game # {gameNumber}</Text>
 
 			{combatants.map(cbt => {
@@ -119,10 +128,10 @@ export default function Battle () {
 					{textPos == 'bottom' && text}
 				</View>
 			})}
-
+				</ImageBackground>
 				<Pressable onPress={() => newTurn()}><button>Advance Combat</button></Pressable>
 				<Text>Battle Log:</Text>
-				{logs.map((msg, key) => {
+				{logs.reverse().map((msg, key) => {
 					return <View key={key}>{msg}</View>
 				})}
 			</View>
@@ -141,20 +150,23 @@ const styles = StyleSheet.create({
 		backgroundColor: '#00CC00',
 		padding: '5px',
 		margin: 'auto',
-		borderRadius: '40px'
+		borderRadius: 40
 	},
 	sprite: {
 		width: '60px',
 	},
 	leftColumn: {
-		flex: '1',
+		flex: 1,
 		alignSelf: 'flex-start',
 		width: '200px',
 	},
 	rightColumn: {
 		alignSelf: 'flex-end',
-		flex: '1',
+		flex: 1,
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 	},
+	backdrop: {
+		resizeMode: 'contain',
+	}
 });

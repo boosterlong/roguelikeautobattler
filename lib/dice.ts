@@ -1,19 +1,23 @@
 import { getRandomInt, getRandomItem } from "./random";
 
 
-export type DieData = {
+export type DiceData = {
     sides:number
 }
 
 
 
-class Die {
+class Dice {
     sides:number
 
 
 
-    constructor ( data : DieData ) {
+    constructor ( data : DiceData ) {
         const { sides  } = data
         this.sides = sides
+    }
+
+    rollDie() {
+        return getRandomInt(1, this.sides)
     }
 }
