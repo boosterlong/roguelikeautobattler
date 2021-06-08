@@ -50,6 +50,12 @@ class Combatant {
         return this.currentHp === 0
     }
 
+    upgradeStr() {
+        this.maxDmg = (this.maxDmg + 3)
+		this.minDmg = (this.minDmg + 2)
+    }
+
+
     getTarget(combatants:Combatant[]) : Combatant {
         const otherGuys = combatants.filter((c) => {
             return c.team != this.team && c.isDead() == false

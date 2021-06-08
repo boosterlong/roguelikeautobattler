@@ -18,7 +18,7 @@ export default function App() {
   return (
   <View style={styles.backSplash}>
     <View style={styles.container}>
-      <View style={styles.title}>The Forest of Judithia, the Eternal Judge</View>
+      <View style={styles.title}>The Forest of Judgement 2: Judithia's Curse</View>
       {CScene}
       <StatusBar style="auto" />
     </View>

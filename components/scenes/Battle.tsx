@@ -22,7 +22,7 @@ export default function Battle () {
 	let teamTurn:string
 
 	if (activeCombatant == 0) {
-		teamTurn = 'Hero'
+		teamTurn = startingPlayer.name
 	}
 	else {
 		teamTurn = 'Enemy'
@@ -31,6 +31,8 @@ export default function Battle () {
 	const combatants = combatantDatas.map((data) => {
 		return new Combatant(data)
 	} )
+
+	const player = combatants[0]
 
 	const youLose = teamIsDead(combatants, 'player')
 	const youWin = teamIsDead(combatants, 'monsters')
@@ -76,67 +78,82 @@ export default function Battle () {
 		setGameNumber(1)
 	}
 
-	function newTurn(choice:number) {
+	function newTurn(choice:string) {
 		const attacker = combatants[activeCombatant]
 		const defender = attacker.getTarget(combatants)
 		const dmg = attacker.rollDamage()
-		if (choice == 1) {
-		if (dmg == 0) {
-			logs.push(`${defender.name} blocked the attack!`)}
-		else {logs.push(`${attacker.name} did ${dmg} damage to ${defender.name}!`)}
-		defender.takeDamage(dmg)
-		setCombatants(combatants.map((c) => {
-			return c.getData()
-		}))
-		setLogs([...logs])
-		let nextCombatant = activeCombatant
+		if (choice == 'attack') {
+			if (dmg == 0) {
+				logs.push(`${defender.name} blocked the attack!`)
+			}
+			else {
+				logs.push(`${attacker.name} did ${dmg} damage to ${defender.name}!`)
+			}
+			defender.takeDamage(dmg)
+			setCombatants(combatants.map((c) => {
+				return c.getData()
+			}))
+			setLogs([...logs])
+
+		} else if (choice == 'heal') {
+			if (attacker.name == 'Hero') {
+				logs.push(`${startingPlayer.name} healed ${dmg} health!`)
+				attacker.takeDamage(dmg * -1)
+				setCombatants(combatants.map((c) => {
+					return c.getData()
+				}))
+				setLogs([...logs]) 
+			}
+			else {
+				alert(`It is not ${startingPlayer.name}'s turn.`)
+				return
+			}
+
+		} 
+		let nextCombatant = activeCombatant			
 		do {
 			nextCombatant = (nextCombatant + 1)
 			if (nextCombatant == combatants.length) {
 				nextCombatant = 0
-			}}
-		while (combatants[nextCombatant].isDead())
+			}
+		} while (combatants[nextCombatant].isDead())
 		setActiveCombatant(nextCombatant)
-	} else if (choice == 2) {
-		if (attacker.name == 'Hero') {
-		{logs.push(`${startingPlayer.name} healed ${dmg} health!`)}
-		attacker.takeDamage(dmg - (Math.floor(dmg * 3)))
-		setCombatants(combatants.map((c) => {
-			return c.getData()
-		}))
-		setLogs([...logs])
-		let nextCombatant = activeCombatant
-		do {
-			nextCombatant = (nextCombatant + 1)
-			if (nextCombatant == combatants.length) {
-				nextCombatant = 0
-			}}
-		while (combatants[nextCombatant].isDead())
-		setActiveCombatant(nextCombatant)
-	}	else {
-		alert(`It is not ${startingPlayer.name}'s turn.`)
 	}
-}}
 
 	const gameOver = <Pressable onPress={() => newGame()}><button>Start Again!</button></Pressable>
-
 	const restart = <Pressable onPress={() => resetHp()}><button>Next Round!</button></Pressable>
+	
+	function strengthUp() {
+		startingPlayer.maxDmg = (startingPlayer.maxDmg + 3)
+		startingPlayer.minDmg = (startingPlayer.minDmg + 2)
+		resetHp()
+	}
+
+	function healthUp() {
+		startingPlayer.maxHp = (startingPlayer.maxHp + 10)
+		startingPlayer.currentHp = startingPlayer.maxHp
+		resetHp()
+	}
+	
+
 	if (youLose) {
 		return <><Text>You lose after winning {gameNumber - 1} rounds!</Text>
 		{gameOver}</>
 	}
 	if (youWin) {
-		return <><Text>You win! Good for you!</Text>
-		{restart}</>
+		return <><Text>You win! Choose an upgrade!</Text>
+		<Pressable onPress={() => strengthUp()}><button>Increase Damage</button></Pressable>
+		<Pressable onPress={() => healthUp()}><button>Increase Health</button></Pressable>
+		</>
 	}
-	if (gameNumber == 6) {
+	if (gameNumber == 20) {
 		return <><Text>You have defeated all the Goblins and Slimes and saved the world!</Text>
 		{gameOver}</>
 	}
 	else {
 		return <View style={styles.container}>
 			<ImageBackground source={background} style={styles.backdrop}>
-			<Text>Game # {gameNumber}</Text>
+			<Text>Level {gameNumber}</Text>
 
 			{combatants.map(cbt => {
 				let style
@@ -156,8 +173,8 @@ export default function Battle () {
 				</View>
 			})}
 				</ImageBackground>
-				<><Pressable onPress={() => newTurn(1)}><button>Attack / Advance Combat</button></Pressable>
-				<Pressable onPress={() => newTurn(2)}><button>Heal (Only on Hero's turn)</button></Pressable></>
+				<><Pressable onPress={() => newTurn('attack')}><button>Attack / Advance Combat</button></Pressable>
+				<Pressable onPress={() => newTurn('heal')}><button>Heal (Only on Hero's turn)</button></Pressable></>
 				<Text style={styles.teamTurn}>{teamTurn}'s turn.</Text>
 				<Text>Battle Log:</Text>
 				{logs.reverse().map((msg, key) => {
@@ -174,13 +191,9 @@ const styles = StyleSheet.create({
 		padding: '10px',
 		border: '1px solid #333333',
 		backgroundColor: '#fff',
+		height: '600px',
+		overflow: 'hidden',
 			},
-	button: {
-		backgroundColor: '#00CC00',
-		padding: '5px',
-		margin: 'auto',
-		borderRadius: 40
-	},
 	sprite: {
 		width: '60px',
 	},
@@ -197,7 +210,7 @@ const styles = StyleSheet.create({
 	},
 	backdrop: {
 		resizeMode: 'contain',
-		border: '2px solid black'
+		border: '2px solid black',
 	},
 	teamTurn: {
 		fontSize: 30,
