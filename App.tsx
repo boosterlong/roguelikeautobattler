@@ -16,10 +16,12 @@ export default function App() {
 
 
   return (
+  <View style={styles.backSplash}>
     <View style={styles.container}>
       <View style={styles.title}>The Forest of Judithia, the Eternal Judge</View>
       {CScene}
       <StatusBar style="auto" />
+    </View>
     </View>
   );
 }
@@ -27,7 +29,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     paddingTop: 20,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
@@ -36,5 +37,10 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     fontFamily: 'Arial',
     paddingBottom: 8,
+  },
+  backSplash: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#cbdbf1'
   }
 });

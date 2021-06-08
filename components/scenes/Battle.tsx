@@ -10,7 +10,6 @@ import background from "../../assets/background.png"
 
 
 const enemyNames = ["Goblin","Slime"]
-const startingHp = 10
 const startingPlayer : CombatantData = {name: 'Hero', currentHp: 25, maxHp: 25, minDmg: 2, maxDmg: 5, team: 'player', sprite: heroSprite}
 
 
@@ -101,7 +100,7 @@ export default function Battle () {
 	} else if (choice == 2) {
 		if (attacker.name == 'Hero') {
 		{logs.push(`${startingPlayer.name} healed ${dmg} health!`)}
-		attacker.takeDamage(dmg - (Math.floor(dmg * 2.5)))
+		attacker.takeDamage(dmg - (Math.floor(dmg * 3)))
 		setCombatants(combatants.map((c) => {
 			return c.getData()
 		}))
@@ -158,7 +157,7 @@ export default function Battle () {
 			})}
 				</ImageBackground>
 				<><Pressable onPress={() => newTurn(1)}><button>Attack / Advance Combat</button></Pressable>
-				<Pressable onPress={() => newTurn(2)}><button>Heal (Only on Hero's turn.)</button></Pressable></>
+				<Pressable onPress={() => newTurn(2)}><button>Heal (Only on Hero's turn)</button></Pressable></>
 				<Text style={styles.teamTurn}>{teamTurn}'s turn.</Text>
 				<Text>Battle Log:</Text>
 				{logs.reverse().map((msg, key) => {
@@ -174,7 +173,7 @@ const styles = StyleSheet.create({
 		width: '100%',
 		padding: '10px',
 		border: '1px solid #333333',
-		background: '#F0F0F0',
+		backgroundColor: '#fff',
 			},
 	button: {
 		backgroundColor: '#00CC00',
@@ -198,6 +197,7 @@ const styles = StyleSheet.create({
 	},
 	backdrop: {
 		resizeMode: 'contain',
+		border: '2px solid black'
 	},
 	teamTurn: {
 		fontSize: 30,
